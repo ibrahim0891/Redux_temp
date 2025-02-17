@@ -30,6 +30,21 @@ const reducer = (state, action) => {
     }
 }
 
+
+const counterReducer = (state, action) => { 
+    switch (action.type) {
+        case 'inc':
+            return { ...state , [action.counterName] : state[action.counterName] + 1 }
+            case 'dec':
+                return { ...state , [action.counterName] : state[action.counterName] - 1 }
+        case 'reset':
+            return { ...state , [action.counterName] : 0}
+        default:
+            return {...state};
+    }
+
+}
+
 const DualButton = (props) => {
     return (
         <div className="grid grid-cols-2 gap-4 max-w-md mx-auto p-4">
@@ -66,14 +81,23 @@ function App() {
         dualButton: false,
         component: 'counter'
     }
+
+    const counters = { counter1: 0, counter2: 0 , counter3 : 0  , ibrahim: 1}; 
     const [toggleComponent, dispatch] = useReducer(reducer, initialView)
-    console.log(toggleComponent);
+
+    const [counterState, counterDispatch] = useReducer(counterReducer, counters)
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-8">
             <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6 space-y-6">
                 
                 <div className="bg-white rounded-lg p-4 shadow-sm">
-                    {toggleComponent.component == 'counter' ? <Counter /> : <Form />}
+                    {toggleComponent.component == 'counter'?
+                    
+                        Object.keys(counterState).map((counter , index )=> <Counter key={index} count={counterState[counter]} counter={counter} dispatch={counterDispatch}> </Counter> ) 
+                    
+                    : <Form />}
+                    <p> Total count : {Object.values(counterState).reduce((a,b) => a + b, 0)}</p>
                 </div>
 
                 {toggleComponent.dualButton ?
